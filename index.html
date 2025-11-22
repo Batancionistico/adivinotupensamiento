@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AdivinaTuPensamiento</title>
   <meta name="description" content="AdivinaTuPensamiento — demo interactiva" />
+
+  <!-- favicon minimalista -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%237be4c7' cx='50' cy='50' r='50'/></svg>">
+
   <style>
     :root{
       --bg1:#0f1724; --bg2:#081021;
@@ -15,84 +19,71 @@
     }
     *{box-sizing:border-box}
 
-```
-/* Reset & centered layout for reliability */
-html,body{height:100%; margin:0; padding:0}
-body{
-  font-family: Inter, Verdana, Geneva, sans-serif;
-  background: linear-gradient(180deg,var(--bg1),var(--bg2));
-  color:#e6eef8; -webkit-font-smoothing:antialiased;
+    html,body{height:100%; margin:0; padding:0}
+    body{
+      font-family: Inter, Verdana, Geneva, sans-serif;
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6eef8;
+      display:flex; align-items:center; justify-content:center;
+      min-height:100vh; padding:28px; overflow:hidden;
+    }
 
-  /* center the app and prevent layout shifts */
-  display:flex; align-items:center; justify-content:center;
-  min-height:100vh; padding:28px; overflow:hidden;
-}
+    #matrix-canvas{position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; opacity:0.12; pointer-events:none}
 
-/* Matrix canvas - purely decorative and always behind */
-#matrix-canvas{position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; opacity:0.12; pointer-events:none}
+    .card{
+      position:relative; z-index:2; width:100%; max-width:980px;
+      border-radius:14px; padding:20px 22px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: 0 8px 26px rgba(4,8,16,0.6); border:1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
+      overflow:visible;
+    }
 
-/* App card - a stable centered container */
-.card{
-  position:relative; z-index:2; width:100%; max-width:980px;
-  border-radius:14px; padding:20px 22px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  box-shadow: 0 8px 26px rgba(4,8,16,0.6); border:1px solid rgba(255,255,255,0.03);
-  backdrop-filter: blur(6px);
-  overflow:visible;
-}
+    header{display:flex; align-items:center; gap:14px}
+    .logo{width:64px; height:64px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#012; font-family:var(--mono); box-shadow:0 6px 18px rgba(123,228,199,0.08);}
+    h1{margin:0; font-size:1.4rem}
+    p.lead{margin:6px 0 14px; color:rgba(230,238,248,0.9)}
 
-header{display:flex; align-items:center; gap:14px}
-.logo{width:64px; height:64px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#012; font-family:var(--mono); box-shadow:0 6px 18px rgba(123,228,199,0.08);}
-h1{margin:0; font-size:1.4rem}
-p.lead{margin:6px 0 14px; color:rgba(230,238,248,0.9)}
+    .grid{display:grid; grid-template-columns: 1fr 380px; gap:18px; align-items:start}
+    @media (max-width:920px){ .grid{grid-template-columns:1fr; } .card{padding:16px} }
 
-/* grid with fixed right panel but responsive */
-.grid{display:grid; grid-template-columns: 1fr 380px; gap:18px; align-items:start}
-@media (max-width:920px){ .grid{grid-template-columns:1fr; } .card{padding:16px} }
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.02)}
+    label{display:block; margin-bottom:8px; font-size:0.95rem}
+    input[type=number]{width:130px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); background:transparent; color:inherit; font-size:1.05rem}
 
-.panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); padding:14px; border-radius:10px; border:1px solid rgba(255,255,255,0.02)}
-label{display:block; margin-bottom:8px; font-size:0.95rem}
-input[type=number]{width:130px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); background:transparent; color:inherit; font-size:1.05rem}
+    .controls{display:flex; gap:10px; margin-top:10px}
+    button{cursor:pointer; padding:10px 12px; border-radius:10px; border:0; font-weight:600}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#001; box-shadow:0 8px 22px rgba(11,20,32,0.28)}
+    .btn-muted{background:transparent; color:rgba(230,238,248,0.9); border:1px solid rgba(255,255,255,0.04)}
 
-.controls{display:flex; gap:10px; margin-top:10px}
-button{cursor:pointer; padding:10px 12px; border-radius:10px; border:0; font-weight:600}
-.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#001; box-shadow:0 8px 22px rgba(11,20,32,0.28)}
-.btn-muted{background:transparent; color:rgba(230,238,248,0.9); border:1px solid rgba(255,255,255,0.04)}
+    .console{margin-top:12px; background:linear-gradient(180deg, rgba(1,6,12,0.22), rgba(1,6,12,0.12)); border-radius:8px; padding:10px; height:260px; overflow:auto; font-family:var(--mono); font-size:0.95rem; color:#bfeee0}
+    .line{opacity:0; transform:translateY(6px); animation:appear .38s forwards}
+    .line .hint{color:rgba(190,238,224,0.55); margin-right:8px}
+    .line.info{color:var(--info); font-weight:700}
+    @keyframes appear{to{opacity:1; transform:none}}
 
-.console{margin-top:12px; background:linear-gradient(180deg, rgba(1,6,12,0.22), rgba(1,6,12,0.12)); border-radius:8px; padding:10px; height:260px; overflow:auto; font-family:var(--mono); font-size:0.95rem; color:#bfeee0}
-.line{opacity:0; transform:translateY(6px); animation:appear .38s forwards}
-.line .hint{color:rgba(190,238,224,0.55); margin-right:8px}
-.line.info{color:var(--info); font-weight:700}
-@keyframes appear{to{opacity:1; transform:none}}
+    aside.panel.result{position:relative; display:flex; flex-direction:column; align-items:center; gap:12px; padding:18px; min-height:320px}
 
-/* right result panel — contained and stable */
-aside.panel.result{position:relative; display:flex; flex-direction:column; align-items:center; gap:12px; padding:18px; min-height:320px}
+    #hiddenCode{
+      position:absolute; top:12px; left:16px; right:16px;
+      margin:0 auto; width:auto; max-width:calc(100% - 32px);
+      height:40px; resize:none; padding:8px 10px; border-radius:8px;
+      border:1px dashed rgba(255,255,255,0.04); background: rgba(0,0,0,0.06);
+      color: var(--accent2); font-family:var(--mono); font-size:12px; opacity:0.18; z-index:4; display:none; overflow:auto; white-space:nowrap;
+    }
+    #hiddenCode.visible{display:block; opacity:0.95}
 
-/* Copyable hidden code placed above orb; clipped if too long but fully selectable */
-#hiddenCode{
-  position:absolute; top:12px; left:16px; right:16px;
-  margin:0 auto; width:auto; max-width:calc(100% - 32px);
-  height:40px; resize:none; padding:8px 10px; border-radius:8px;
-  border:1px dashed rgba(255,255,255,0.04); background: rgba(0,0,0,0.06);
-  color: var(--accent2); font-family:var(--mono); font-size:12px; opacity:0.18; z-index:4; display:none; overflow:auto; white-space:nowrap;
-}
-#hiddenCode.visible{display:block; opacity:0.95}
+    .orb{width:160px; height:160px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), rgba(0,0,0,0.15)), conic-gradient(from 180deg at 50% 50%, rgba(123,228,199,0.06), rgba(138,180,255,0.06)); border:1px solid rgba(255,255,255,0.03)}
+    .orb .num{font-size:3.2rem; font-weight:800; font-family:var(--mono); color:var(--accent); text-shadow:0 6px 30px rgba(123,228,199,0.06)}
+    .subtitle{color:rgba(230,238,248,0.78); font-size:0.95rem}
+    .reveal{margin-top:8px; font-size:1.1rem; font-weight:700}
 
-.orb{width:160px; height:160px; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), rgba(0,0,0,0.15)), conic-gradient(from 180deg at 50% 50%, rgba(123,228,199,0.06), rgba(138,180,255,0.06)); border:1px solid rgba(255,255,255,0.03)}
-.orb .num{font-size:3.2rem; font-weight:800; font-family:var(--mono); color:var(--accent); text-shadow:0 6px 30px rgba(123,228,199,0.06)}
-.subtitle{color:rgba(230,238,248,0.78); font-size:0.95rem}
-.reveal{margin-top:8px; font-size:1.1rem; font-weight:700}
+    #infoBlock{font-family:var(--mono); font-size:13px; color:var(--info); white-space:pre-line; text-align:center; display:none}
 
-/* info block under orb */
-#infoBlock{font-family:var(--mono); font-size:13px; color:var(--info); white-space:pre-line; text-align:center; display:none}
+    footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
+    .muted{color:rgba(230,238,248,0.55)}
 
-footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
-.muted{color:rgba(230,238,248,0.55)}
-
-/* small responsiveness: keep everything inside card */
-@media (max-width:480px){ #hiddenCode{font-size:11px; height:34px} .orb{width:140px;height:140px} }
-```
-
+    @media (max-width:480px){ #hiddenCode{font-size:11px; height:34px} .orb{width:140px;height:140px} }
   </style>
 </head>
 <body>
@@ -107,43 +98,41 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
       </div>
     </header>
 
-```
-<div class="grid" style="margin-top:14px">
-  <div class="panel">
-    <label for="numero">Ingresa un número (1–10)</label>
-    <div style="display:flex;gap:10px;align-items:center">
-      <input id="numero" type="number" min="1" max="10" aria-label="Número del 1 al 10">
-      <div class="controls">
-        <button id="start" class="btn-primary">Empezar</button>
-        <button id="reset" class="btn-muted">Reiniciar</button>
+    <div class="grid" style="margin-top:14px">
+      <div class="panel">
+        <label for="numero">Ingresa un número (1–10)</label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="numero" type="number" min="1" max="10" aria-label="Número del 1 al 10">
+          <div class="controls">
+            <button id="start" class="btn-primary">Empezar</button>
+            <button id="reset" class="btn-muted">Reiniciar</button>
+          </div>
+        </div>
+
+        <div class="console" id="console" aria-live="polite"></div>
+        <div class="small muted" style="margin-top:10px">Pista: responde con honestidad (o no).</div>
       </div>
+
+      <aside class="panel result">
+        <textarea id="hiddenCode" readonly aria-hidden="true"></textarea>
+
+        <div class="orb" aria-hidden="true">
+          <div class="num" id="orb-number">?</div>
+        </div>
+
+        <div class="subtitle">Resultado final del análisis</div>
+        <div class="reveal" id="reveal-text">Aun no se ha calculado</div>
+
+        <div id="infoBlock"></div>
+        <button id="copy" class="btn-muted" style="margin-top:8px">Copiar resultado</button>
+        <div style="font-size:0.75rem; margin-top:2px">(para presumir)</div>
+        <footer class="small">Diseño original • AdivinaTuPensamiento</footer>
+      </aside>
     </div>
-
-    <div class="console" id="console" aria-live="polite"></div>
-    <div class="small muted" style="margin-top:10px">Pista: responde con honestidad (o no).</div>
-  </div>
-
-  <aside class="panel result">
-    <textarea id="hiddenCode" readonly aria-hidden="true"></textarea>
-
-    <div class="orb" aria-hidden="true">
-      <div class="num" id="orb-number">?</div>
-    </div>
-
-    <div class="subtitle">Resultado final del análisis</div>
-    <div class="reveal" id="reveal-text">Aún no se ha calculado</div>
-
-    <div id="infoBlock"></div>
-    <button id="copy" class="btn-muted" style="margin-top:8px">Copiar resultado</button>
-    <footer class="small">Diseño original • AdivinaTuPensamiento</footer>
-  </aside>
-</div>
-```
-
   </div>
 
   <script>
-    /* Matrix background */
+    // Fondo matrix
     (function(){
       const canvas = document.getElementById('matrix-canvas');
       const ctx = canvas.getContext('2d');
@@ -179,7 +168,7 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
       draw();
     })();
 
-    /* UI elements */
+    // Elementos UI
     const input = document.getElementById('numero');
     const startBtn = document.getElementById('start');
     const resetBtn = document.getElementById('reset');
@@ -190,12 +179,12 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
     const hiddenCodeEl = document.getElementById('hiddenCode');
     const infoBlock = document.getElementById('infoBlock');
 
-    /* Message pools */
+    // Mensajes para la consola
     const POOLS = {
-      intros: ['Iniciando rutinas cognitivas...','Estableciendo enlace empático...','Calibrando sensores de intuición...','Sincronizando relojes...','Accediendo a archivo de corazonadas...'],
-      operations: ['Aplicando transformada sobre la intuición...','Factorizando en varias dimensiones...','Ejecutando optimizador de coincidencias...','Reduciendo ruido cuántico...'],
-      fun: ['Consultando oráculo retroalimentado por memes...','Comparando con señales coincidenciales...','Ejecutando subrutina "asombro instantáneo"...','Validando probabilidad de sorpresa...'],
-      mathy: ['Resolviendo ecuación: (π × voluntad) ÷ ϕ...','Ajustando coeficientes del destino...','Integrando sobre la variable "intuición"...'],
+      intros: ['Iniciando rutinas cognitivas...','Estableciendo enlace empatico...','Calibrando sensores de intuicion...','Sincronizando relojes...','Accediendo a archivo de corazonadas...'],
+      operations: ['Aplicando transformada sobre la intuicion...','Factorizando en varias dimensiones...','Ejecutando optimizador de coincidencias...','Reduciendo ruido cuantico...'],
+      fun: ['Consultando oraculo retroalimentado por memes...','Comparando con señales coincidenciales...','Ejecutando subrutina asombro instantaneo...','Validando probabilidad de sorpresa...'],
+      mathy: ['Resolviendo ecuacion: (pi × voluntad) ÷ ϕ...','Ajustando coeficientes del destino...','Integrando sobre la variable intuicion...'],
       finale: ['Generando resultado final...','Preparando salida neuronal...','Firmando resultado...']
     };
 
@@ -210,10 +199,10 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
     }
 
     function pickSequence(){
-      const introCount = 2 + Math.floor(Math.random()*3); // 2-4
-      const opCount = 3 + Math.floor(Math.random()*3); //3-5
-      const funCount = 1 + Math.floor(Math.random()*2); //1-2
-      const mathCount = 1 + Math.floor(Math.random()*1); //1
+      const introCount = 2 + Math.floor(Math.random()*3);
+      const opCount = 3 + Math.floor(Math.random()*3);
+      const funCount = 1 + Math.floor(Math.random()*2);
+      const mathCount = 1 + Math.floor(Math.random()*1);
       const seq = [];
       seq.push(...shuffle(POOLS.intros).slice(0,introCount));
       seq.push(...shuffle(POOLS.operations).slice(0,opCount));
@@ -239,7 +228,6 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
     function clearConsole(){ consoleEl.innerHTML = ''; }
     function validNumber(n){ const num = Number(n); return Number.isInteger(num) && num >=1 && num <=10; }
 
-    /* Fake info generators (purely random strings) */
     function randomIp(){
       const a = (10 + Math.floor(Math.random()*245)) % 255 || 23;
       return [a, 1+Math.floor(Math.random()*254), 1+Math.floor(Math.random()*254), 1+Math.floor(Math.random()*254)].join('.');
@@ -252,27 +240,24 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
     }
     function randomIsp(){ const isp = ['FibraPlus','NetWave','HyperISP','LambdaCorp','GloboNet','AetherCom']; return isp[Math.floor(Math.random()*isp.length)]; }
 
-    /* Encoded hidden message (Base64) */
     const encodedHidden = "amVqZS4uLiDwn5ZzYWJlcyBwb3IgcsOhbyBsb3MgZXNxdWVsb3RvcyBubyBkaXNjdXRlbigpIHBvcnF1ZSBubyB0aWVuZW4gbGEgcGFjaWVuY2lhLi4uIG5pIGVsICdjb3JhY2nDrW9uJyBwYXJhIGVsbG8uIHlvIG1lIGNvbmZvcm1vIGNvbiB1biBidWVuIHB1biB5IHVuYSBzaWVzdGEu";
 
     async function runSequence(){
       const userVal = input.value.trim();
       if(!validNumber(userVal)){
-        await writeLine('ERROR: Por favor ingresa un número entero entre 1 y 10.', 80);
-        revealText.textContent = 'Entrada inválida';
+        await writeLine('ERROR: Por favor ingresa un numero entero entre 1 y 10.', 80);
+        revealText.textContent = 'Entrada invalida';
         return;
       }
 
-      // lock UI & reset
       input.disabled = true; startBtn.disabled = true; resetBtn.disabled = true; copyBtn.disabled = true;
       orbNumber.textContent = '?'; revealText.textContent = 'Analizando...'; clearConsole(); hiddenCodeEl.classList.remove('visible'); hiddenCodeEl.value = '';
       infoBlock.style.display = 'none'; infoBlock.innerText = '';
 
-      // build sequence and compute per-line timing (~6-10s)
       const seq = pickSequence();
       const extraMath = shuffle(POOLS.mathy).slice(0, Math.floor(Math.random()*2)+1);
       const totalLines = seq.length + extraMath.length + 2;
-      const totalTime = 6000 + Math.floor(Math.random()*4000); // 6k-10k ms
+      const totalTime = 6000 + Math.floor(Math.random()*4000);
       let perLine = Math.max(100, Math.floor(totalTime / totalLines));
 
       for(let i=0;i<seq.length;i++){
@@ -281,20 +266,17 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
       for(const m of extraMath){
         await writeLine(m, perLine);
       }
-      await writeLine('Finalizando cálculos...', perLine);
+      await writeLine('Finalizando calculos...', perLine);
 
       await new Promise(r => setTimeout(r, 240));
 
-      // reveal number
       const final = String(Number(userVal));
       orbNumber.textContent = final;
-      revealText.textContent = `Tu número es ${final} — ¡adivinado!`;
+      revealText.textContent = `Tu numero es ${final} — adivinado`;
 
-      // show hidden base64 in the textarea above orb (selectable & copyable)
       hiddenCodeEl.value = encodedHidden;
       hiddenCodeEl.classList.add('visible');
 
-      // show fake info block (IP/DNS/ISP) under the reveal
       await new Promise(r => setTimeout(r, 360));
       const fakeIp = randomIp();
       const fakeDns = randomDns();
@@ -302,43 +284,36 @@ footer.small{margin-top:10px; color:rgba(230,238,248,0.55); font-size:0.82rem}
       infoBlock.style.display = 'block';
       infoBlock.innerText = `IP: ${fakeIp}\nDNS: ${fakeDns}\nISP: ${fakeIsp}`;
 
-      // print to console as well
       await writeLine(`IP: ${fakeIp}`, 220, 'line info');
       await writeLine(`DNS: ${fakeDns}`, 220, 'line info');
       await writeLine(`ISP: ${fakeIsp}`, 220, 'line info');
 
-      // re-enable UI
       input.disabled = false; startBtn.disabled = false; resetBtn.disabled = false; copyBtn.disabled = false;
     }
 
-    /* events */
     startBtn.addEventListener('click', runSequence);
     input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') runSequence(); });
-    resetBtn.addEventListener('click', ()=>{ input.value = ''; orbNumber.textContent = '?'; revealText.textContent = 'Aún no se ha calculado'; clearConsole(); hiddenCodeEl.classList.remove('visible'); hiddenCodeEl.value = ''; infoBlock.style.display='none'; infoBlock.innerText=''; });
+    resetBtn.addEventListener('click', ()=>{ input.value = ''; orbNumber.textContent = '?'; revealText.textContent = 'Aun no se ha calculado'; clearConsole(); hiddenCodeEl.classList.remove('visible'); hiddenCodeEl.value = ''; infoBlock.style.display='none'; infoBlock.innerText=''; });
 
     copyBtn.addEventListener('click', ()=>{
       const t = orbNumber.textContent;
       if(t && t !== '?'){
-        navigator.clipboard?.writeText(t).then(()=>{ revealText.textContent = 'Resultado copiado 🎉'; setTimeout(()=> revealText.textContent = `Tu número es ${t} — ¡adivinado!`, 1200); }).catch(()=>{ revealText.textContent = 'No se pudo copiar automáticamente.'; });
+        navigator.clipboard?.writeText(t).then(()=>{ revealText.textContent = 'Resultado copiado'; setTimeout(()=> revealText.textContent = `Tu numero es ${t} — adivinado`, 1200); }).catch(()=>{ revealText.textContent = 'No se pudo copiar automaticamente'; });
       } else {
-        revealText.textContent = 'Aún no hay resultado para copiar.';
+        revealText.textContent = 'Aun no hay resultado para copiar';
       }
     });
 
-    // allow clicking the hidden textarea to select all and copy
     hiddenCodeEl.addEventListener('click', ()=>{
       hiddenCodeEl.select();
-      try{ navigator.clipboard.writeText(hiddenCodeEl.value); revealText.textContent = 'Código copiado al portapapeles'; setTimeout(()=> revealText.textContent = `Tu número es ${orbNumber.textContent} — ¡adivinado!`, 1200); }catch(e){}
+      try{ navigator.clipboard.writeText(hiddenCodeEl.value); revealText.textContent = 'Codigo copiado al portapapeles'; setTimeout(()=> revealText.textContent = `Tu numero es ${orbNumber.textContent} — adivinado`, 1200); }catch(e){}
     });
 
     input.value = (1 + Math.floor(Math.random()*10));
 
-    /* Key combo: Shift + Alt + S shows decoded message in title for 8s (optional) */
     function revealHiddenTitle(){ try{ const decoded = atob(encodedHidden); const prev = document.title; document.title = decoded; setTimeout(()=> document.title = prev, 8000); } catch(e){} }
     window.addEventListener('keydown', (ev)=>{ if(ev.shiftKey && ev.altKey && (ev.key === 'S' || ev.key === 's')){ revealHiddenTitle(); } });
     window.__revealSansJoke = revealHiddenTitle;
-
   </script>
-
 </body>
 </html>
